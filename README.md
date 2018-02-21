@@ -65,6 +65,28 @@ PIP_OPTIONS="-c ${SYS_CONSTRAINTS} -r ${SYS_REQUIREMENTS}"
 ${VENV_PIP} install ${PIP_OPTIONS} || ${VENV_PIP} install --isolated ${PIP_OPTIONS}
 ```
 
+Generate Molecule Config from Ansible Dynamic Inventory
+-------------------------------------------------------
+
+The `moleculerize.py` script will build molecule config files from a RPC-O Ansible dynamic inventory file. As a
+prerequisite to using the `moleculerize.py` script a dynamic inventory must be generated from a RPC-O build:
+
+```
+sudo su -
+cd /opt/openstack-ansible/playbooks/inventory
+./dynamic_inventory.py > /path/to/dynaic_inventory.json
+```
+
+Now you can generate a `molecule.yml` config file using the `moleculerize.py` script:
+
+```
+cd /path/to/molecule-ntp
+./moleculerize.py /path/to/dynaic_inventory.json
+```
+
+The above command assumes that the `templates/molecule.yml.j2` template will be used along with `molecule.yml` as 
+the output file.
+
 Test Execution
 --------------
 For each of the submodules in the `molecules` directory, run the `molecule converge`
