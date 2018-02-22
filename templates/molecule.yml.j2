@@ -12,11 +12,11 @@ lint:
   name: yamllint
 platforms:
 {% for host in hosts.keys()|sort %}
-  - name: {{host}}
-{% if hosts[host]|length > 1 %}
+  - name: {{ host }}
+{% if hosts[host]|length > 0 %}
     groups:
 {% for group in hosts[host]|sort %}
-      - {{group}}
+      - {{ group }}
 {% endfor %}
 {% endif %}
 {% endfor %}

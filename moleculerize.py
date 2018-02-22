@@ -48,16 +48,30 @@ def generate_hosts_inventory(json_inventory):
         json_inventory (dict): A dictionary object representing a Ansible JSON inventory file.
 
     Returns:
-        dict(list(str)): A dictionary of hosts with each host having a list of associated groups.
+        dict(list): A dictionary of hosts with each host having a list of associated groups.
+            { 'host_name': ['group1', 'group2'] }
+
     """
 
-    inventory_hosts = {k: [] for k in json_inventory['_meta']['hostvars'].keys()}
+    inventory_hosts = {k: set() for k in json_inventory['_meta']['hostvars'].keys()}
     inventory_groups = {k: v for (k, v) in json_inventory.items() if k != '_meta'}
+    inventory_child_groups = {}
+
+    for group_name, group_info in inventory_groups.items():
+        if 'children' in group_info and len(group_info['children']) > 0:
+            for child in group_info['children']:
+                if child in inventory_child_groups.keys():
+                    inventory_child_groups[child].add(group_name)
+                else:
+                    inventory_child_groups[child] = {group_name}
 
     for group_name, group_info in inventory_groups.items():
         if 'hosts' in group_info.keys():
             for host in group_info['hosts']:
-                inventory_hosts[host].append(group_name)
+                inventory_hosts[host].add(group_name)
+
+                if group_name in inventory_child_groups.keys():
+                    inventory_hosts[host].update(inventory_child_groups[group_name])
 
     return inventory_hosts
 
