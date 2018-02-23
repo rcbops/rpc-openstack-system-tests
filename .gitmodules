@@ -1,0 +1,3 @@
+[submodule "molecules/molecule-validate-cinder-deploy"]
+	path = molecules/molecule-validate-cinder-deploy
+	url = https://github.com/phongdly/molecule-validate-cinder-deploy
