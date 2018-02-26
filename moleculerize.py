@@ -5,7 +5,7 @@
 import sys
 import json
 from argparse import ArgumentParser
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, TemplateError
 
 
 # ======================================================================================================================
@@ -36,7 +36,7 @@ def _load_input_file(file_path):
         with open(file_path, 'r') as f:
             json_inventory = json.loads(f.read())
     except IOError:
-        raise RuntimeError('Invalid file path!')
+        raise RuntimeError('Invalid path "{}" for inventory file!'.format(file_path))
 
     return json_inventory
 
@@ -53,9 +53,13 @@ def generate_hosts_inventory(json_inventory):
 
     """
 
-    inventory_hosts = {k: set() for k in json_inventory['_meta']['hostvars'].keys()}
-    inventory_groups = {k: v for (k, v) in json_inventory.items() if k != '_meta'}
     inventory_child_groups = {}
+
+    try:
+        inventory_hosts = {k: set() for k in json_inventory['_meta']['hostvars'].keys()}
+        inventory_groups = {k: v for (k, v) in json_inventory.items() if k != '_meta'}
+    except KeyError:
+        raise RuntimeError('Expected key(s) missing from inventory file! ("_meta", hostvars")')
 
     for group_name, group_info in inventory_groups.items():
         if 'children' in group_info and len(group_info['children']) > 0:
@@ -90,7 +94,10 @@ def render_molecule_template(inventory_hosts, template_file):
 
     j2_env = Environment(loader=FileSystemLoader(TEMPLATES_DIR), trim_blocks=True)
 
-    return j2_env.get_template(template_file).render(hosts=inventory_hosts)
+    try:
+        return j2_env.get_template(template_file).render(hosts=inventory_hosts)
+    except TemplateError:
+        raise RuntimeError('Template "{}" not found!'.format(template_file))
 
 
 # ======================================================================================================================
@@ -133,8 +140,11 @@ def main(argv):
     try:
         inventory_hosts = generate_hosts_inventory(_load_input_file(args.inv_file))
 
-        with open(args.output, 'wb') as f:
-            f.write(render_molecule_template(inventory_hosts, args.template))
+        try:
+            with open(args.output, 'wb') as f:
+                f.write(render_molecule_template(inventory_hosts, args.template))
+        except IOError:
+            raise RuntimeError('Cannot write "{}" Molecule configuration file!'.format(args.output))
 
         print("Inventory file: {}".format(args.inv_file))
         print("Template file: {0}/{1}".format(TEMPLATES_DIR, args.template))
