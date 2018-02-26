@@ -43,7 +43,11 @@ PIP_OPTIONS="-c ${SYS_CONSTRAINTS} -r ${SYS_REQUIREMENTS}"
 ${VENV_PIP} install ${PIP_OPTIONS} || ${VENV_PIP} install --isolated ${PIP_OPTIONS}
 
 # Generate moleculerized inventory from openstack-ansible dynamic inventory
-${SYS_INVENTORY}/dynamic_inventory.py > dynamic_inventory.json
+if [[ -n "${MNAIO_SSH}" ]]; then
+    ${MNAIO_SSH} "${SYS_INVENTORY}/dynamic_inventory.py" > dynamic_inventory.json
+else
+    ${SYS_INVENTORY}/dynamic_inventory.py > dynamic_inventory.json
+fi
 
 # Run molecule converge and verify
 # for each submodule in ${SYS_TEST_SOURCE}/molecules
