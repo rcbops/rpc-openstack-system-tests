@@ -92,7 +92,7 @@ def render_molecule_template(inventory_hosts, template_file):
         str: A molecule config file populated with hosts and groups.
     """
 
-    j2_env = Environment(loader=FileSystemLoader(TEMPLATES_DIR), trim_blocks=True)
+    j2_env = Environment(loader=FileSystemLoader(TEMPLATES_DIR), trim_blocks=True, lstrip_blocks=True)
 
     try:
         return j2_env.get_template(template_file).render(hosts=inventory_hosts)
