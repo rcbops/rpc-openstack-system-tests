@@ -1,4 +1,4 @@
 -c constraints.txt
 molecule
 mock
--e git+https://github.com/ryan-rs/pytest-rpc.git@master#egg=pytest-rpc
+-e git+https://github.com/rcbops/pytest-rpc.git@master#egg=pytest-rpc
