@@ -1,5 +1,4 @@
+-c constraints.txt
 molecule
-ansible
-jinja2
-pyyaml
 mock
+-e git+https://github.com/ryan-rs/pytest-rpc.git@master#egg=pytest-rpc

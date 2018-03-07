@@ -61,7 +61,7 @@ if [[ "$(${VENV_PIP} --version)" != "pip ${PIP_TARGET}"* ]]; then
 fi
 
 # Install test suite requirements
-PIP_OPTIONS="-c ${SYS_CONSTRAINTS} -r ${SYS_REQUIREMENTS}"
+PIP_OPTIONS=-r ${SYS_REQUIREMENTS}"
 ${VENV_PIP} install ${PIP_OPTIONS} || ${VENV_PIP} install --isolated ${PIP_OPTIONS}
 ```
 
