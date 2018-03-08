@@ -13,12 +13,12 @@ lint:
 platforms:
 {% for host in hosts.keys()|sort %}
   - name: {{ host }}
-{% if hosts[host]|length > 0 %}
+  {% if hosts[host]|length > 0 %}
     groups:
-{% for group in hosts[host]|sort %}
+    {% for group in hosts[host]|sort %}
       - {{ group }}
-{% endfor %}
-{% endif %}
+    {% endfor %}
+  {% endif %}
 {% endfor %}
 provisioner:
   name: ansible
