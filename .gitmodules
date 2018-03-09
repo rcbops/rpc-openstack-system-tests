@@ -1,3 +1,6 @@
 [submodule "molecules/molecule-validate-cinder-deploy"]
 	path = molecules/molecule-validate-cinder-deploy
 	url = https://github.com/rcbops/molecule-validate-cinder-deploy
+[submodule "molecules/molecule-validate-nova-deploy"]
+	path = molecules/molecule-validate-nova-deploy
+	url = https://github.com/rcbops/molecule-validate-nova-deploy
