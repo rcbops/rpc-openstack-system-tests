@@ -4,7 +4,7 @@
 
 ## Shell Opts ----------------------------------------------------------------
 
-set -ev
+set -x
 set -o pipefail
 export ANSIBLE_HOST_KEY_CHECKING=False
 
@@ -17,6 +17,8 @@ SYS_INVENTORY="${SYS_INVENTORY:-/opt/openstack-ansible/playbooks/inventory}"
 
 ## Main ----------------------------------------------------------------------
 
+# fail hard during setup
+set -e
 # Create virtualenv for molecule
 virtualenv --no-pip --no-setuptools --no-wheel "${SYS_VENV_NAME}"
 
@@ -57,9 +59,13 @@ for TEST in molecules/* ; do
     pushd "$TEST"
     molecule converge
     molecule verify
+    [[ $? -ne 0 ]] && RC=$?  # record non-zero exit code
     popd
 done
 
 # Gather junit.xml results
 rm -f test_results.tar  # ensure any previous results are deleted
 ls  molecules/*/molecule/*/*.xml | tar -cvf test_results.tar --files-from=-
+
+# if exit code is recorded, use it, otherwise let it exit naturally
+[[ -z ${RC+x} ]] && exit ${RC}
