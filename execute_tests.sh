@@ -14,6 +14,9 @@ SYS_VENV_NAME="${SYS_VENV_NAME:-venv-molecule}"
 SYS_CONSTRAINTS="constraints.txt"
 SYS_REQUIREMENTS="requirements.txt"
 SYS_INVENTORY="${SYS_INVENTORY:-/opt/openstack-ansible/playbooks/inventory}"
+${MNAIO_SSH} test -f "${SYS_INVENTORY}/dynamic_inventory.py" || \
+    SYS_INVENTORY="/opt/openstack-ansible/inventory" && ${MNAIO_SSH} test -f "${SYS_INVENTORY}/dynamic_inventory.py" || \
+    SYS_INVENTORY="/unknown_inventory_path"
 
 ## Main ----------------------------------------------------------------------
 
