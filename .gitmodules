@@ -4,3 +4,6 @@
 [submodule "molecules/molecule-validate-nova-deploy"]
 	path = molecules/molecule-validate-nova-deploy
 	url = https://github.com/rcbops/molecule-validate-nova-deploy
+[submodule "molecules/molecule-validate-neutron-deploy"]
+	path = molecules/molecule-validate-neutron-deploy
+	url = https://github.com/rcbops/molecule-validate-neutron-deploy
