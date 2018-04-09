@@ -60,7 +60,7 @@ for TEST in molecules/* ; do
     ./moleculerize.py --output "$TEST/molecule/default/molecule.yml" dynamic_inventory.json
     pushd "$TEST"
     echo "TESTING: $(git remote -v | awk '/fetch/{print $2}') at SHA $(git rev-parse HEAD)"
-    molecule converge
+    molecule --debug converge
     molecule verify
     [[ $? -ne 0 ]] && RC=$?  # record non-zero exit code
     popd
