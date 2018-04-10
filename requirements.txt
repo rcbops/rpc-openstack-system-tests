@@ -1,4 +1,7 @@
 -c constraints.txt
 molecule
 mock
+shade
+ipaddr
+netaddr
 -e git+https://github.com/rcbops/pytest-rpc.git@master#egg=pytest-rpc
