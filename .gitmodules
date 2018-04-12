@@ -7,3 +7,6 @@
 [submodule "molecules/molecule-validate-neutron-deploy"]
 	path = molecules/molecule-validate-neutron-deploy
 	url = https://github.com/rcbops/molecule-validate-neutron-deploy
+[submodule "molecules/molecule-validate-glance-deploy"]
+	path = molecules/molecule-validate-glance-deploy
+	url = https://github.com/rcbops/molecule-validate-glance-deploy
