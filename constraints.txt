@@ -1,3 +1,4 @@
 molecule==2.8.2
 pbr==3.0.1
 ansible==2.4.3
+pytest-rpc<1.0.0
