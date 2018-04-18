@@ -59,6 +59,8 @@ set +e # allow test stages to return errors
 for TEST in molecules/* ; do
     ./moleculerize.py --output "$TEST/molecule/default/molecule.yml" dynamic_inventory.json
     pushd "$TEST"
+    # Capture the molecule test repo in the environment so "pytest-rpc" can record it.
+    export MOLECULE_TEST_REPO=$TEST
     echo "TESTING: $(git remote -v | awk '/fetch/{print $2}') at SHA $(git rev-parse HEAD)"
     molecule --debug converge
     molecule verify
