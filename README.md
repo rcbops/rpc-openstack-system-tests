@@ -23,7 +23,34 @@ Since the molecule tests are included as git submodules, they must be
 initialized and updated in order to be accessible to the molecule test runner.
 ```
 git submodule init
-git submodule update --recursive
+git submodule update --recursive --remote
+```
+
+Adding Submodules
+-----------------
+The submodules for the tests should have branches that mirror the release
+branches for this repository (and the rpc-openstack repository). The
+submodules should be set to track the appropriate matching branch. For
+example, all submodules in the _pike_ branch of this repo should be set to
+track the _pike_ branch of their remote origin.
+
+When adding a new submodule, the branch tracking will need to be performed for
+each of the release branches.
+
+Add new submodule in _master_ branch and set it to track _master_ branch for its
+remote origin.
+```
+git submodule add -b master [URL to Git repo]
+git submodule init
+```
+
+After this has been committed to the _master_ branch, for each release branch,
+the commit associated with the submodule addition should be rebased or
+cherry-picked to the release branch and the tracking configuration for each
+submodule should be changed to reflect the release branch. The following
+command can be used to achieve this.
+```
+git config -f .gitmodules submodule.<path>.branch <branch>
 ```
 
 Virtualenv Deployment
