@@ -1,12 +1,16 @@
 [submodule "molecules/molecule-validate-cinder-deploy"]
 	path = molecules/molecule-validate-cinder-deploy
 	url = https://github.com/rcbops/molecule-validate-cinder-deploy
+	branch = pike
 [submodule "molecules/molecule-validate-nova-deploy"]
 	path = molecules/molecule-validate-nova-deploy
 	url = https://github.com/rcbops/molecule-validate-nova-deploy
+	branch = pike
 [submodule "molecules/molecule-validate-neutron-deploy"]
 	path = molecules/molecule-validate-neutron-deploy
 	url = https://github.com/rcbops/molecule-validate-neutron-deploy
+	branch = pike
 [submodule "molecules/molecule-validate-glance-deploy"]
 	path = molecules/molecule-validate-glance-deploy
 	url = https://github.com/rcbops/molecule-validate-glance-deploy
+	branch = pike
