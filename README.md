@@ -40,7 +40,7 @@ each of the release branches.
 Add new submodule in _master_ branch and set it to track _master_ branch for its
 remote origin.
 ```
-git submodule add -b master [URL to Git repo]
+git submodule add -b master [URL to Git repo] molecules/[name of Git repo]
 git submodule init
 ```
 
