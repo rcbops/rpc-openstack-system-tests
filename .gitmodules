@@ -14,3 +14,7 @@
 	path = molecules/molecule-validate-glance-deploy
 	url = https://github.com/rcbops/molecule-validate-glance-deploy
 	branch = pike
+[submodule "molecules/molecule-rpc-openstack-post-deploy"]
+	path = molecules/molecule-rpc-openstack-post-deploy
+	url = https://github.com/rcbops/molecule-rpc-openstack-post-deploy
+	branch = pike
