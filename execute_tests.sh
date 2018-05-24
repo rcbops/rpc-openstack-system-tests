@@ -57,7 +57,7 @@ echo "+-------------------- ANSIBLE INVENTORY --------------------+"
 # for each submodule in ${SYS_TEST_SOURCE}/molecules
 set +e # allow test stages to return errors
 for TEST in molecules/* ; do
-    ./moleculerize.py --output "$TEST/molecule/default/molecule.yml" dynamic_inventory.json
+    moleculerize --output "$TEST/molecule/default/molecule.yml" dynamic_inventory.json
     pushd "$TEST"
     repo_uri=$(git remote -v | awk '/fetch/{print $2}')
     echo "TESTING: $repo_uri at SHA $(git rev-parse HEAD)"
