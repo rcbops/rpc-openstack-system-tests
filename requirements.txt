@@ -2,3 +2,4 @@
 molecule
 mock
 pytest-rpc
+moleculerize
