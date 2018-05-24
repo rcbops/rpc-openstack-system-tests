@@ -101,14 +101,14 @@ prerequisite to using the `moleculerize` tool, a dynamic inventory must be gener
 ```
 sudo su -
 cd /opt/openstack-ansible/playbooks/inventory
-./dynamic_inventory.py > /path/to/dynaic_inventory.json
+./dynamic_inventory.py > /path/to/dynamic_inventory.json
 ```
 
 Now you can generate a `molecule.yml` config file using the `moleculerize` tool:
 
 ```
 cd /path/to/rpc-openstack-system-tests
-moleculerize /path/to/dynaic_inventory.json
+moleculerize /path/to/dynamic_inventory.json
 ```
 
 The above command assumes that `moleculerize`'s built-in `molecule.yml.j2` template will be used along with 
