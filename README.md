@@ -95,24 +95,24 @@ ${VENV_PIP} install ${PIP_OPTIONS} || ${VENV_PIP} install --isolated ${PIP_OPTIO
 Generate Molecule Config from Ansible Dynamic Inventory
 -------------------------------------------------------
 
-The `moleculerize.py` script will build molecule config files from a RPC-O Ansible dynamic inventory file. As a
-prerequisite to using the `moleculerize.py` script a dynamic inventory must be generated from a RPC-O build:
+The `moleculerize` tool will build molecule config files from a RPC-O Ansible dynamic inventory file. As a
+prerequisite to using the `moleculerize` tool, a dynamic inventory must be generated from a RPC-O build:
 
 ```
 sudo su -
 cd /opt/openstack-ansible/playbooks/inventory
-./dynamic_inventory.py > /path/to/dynaic_inventory.json
+./dynamic_inventory.py > /path/to/dynamic_inventory.json
 ```
 
-Now you can generate a `molecule.yml` config file using the `moleculerize.py` script:
+Now you can generate a `molecule.yml` config file using the `moleculerize` tool:
 
 ```
 cd /path/to/rpc-openstack-system-tests
-./moleculerize.py /path/to/dynaic_inventory.json
+moleculerize /path/to/dynamic_inventory.json
 ```
 
-The above command assumes that the `templates/molecule.yml.j2` template will be used along with `molecule.yml` as 
-the output file.
+The above command assumes that `moleculerize`'s built-in `molecule.yml.j2` template will be used along with 
+`molecule.yml` as the output file.
 
 Execute Molecule Tests
 ----------------------
@@ -121,7 +121,7 @@ command to execute any ansible playbook plays needed to set the system up for
 test validation. Then run the `molecule verify` command to validate that the
 system state conforms to the defined specifications.
 
-The `molecularize.py` script is used to transpose the Deploy Host's dynamic
+The `molecularize` tool is used to transpose the Deploy Host's dynamic
 inventory JSON output into the yaml format used by molecule internally.
 
 Example:
@@ -129,19 +129,10 @@ Example:
 # Assuming that the dynamic inventory script is located at the following location:
 /opt/openstack-ansible/playbooks/inventory/dynamic_inventory.py > /tmp/dynamic_inventory.json
 for TEST in $(ls molecules) ; do
-    ./moleculerize.py --output molecules/$TEST/molecule/default/molecule.yml /tmp/dynamic_inventory.json
+    moleculerize --output molecules/$TEST/molecule/default/molecule.yml /tmp/dynamic_inventory.json
     pushd molecules/$TEST
     molecule converge
     molecule verify
     popd
 done
-```
-
-Execute 'moleculerize.py' Unit Tests
-------------------------------------
-Execute the unit tests for the `molecularize.py` script use the following commands:
-
-```
-cd /path/to/rpc-openstack-system-tests
-python -m unittest discover -s tests
 ```
