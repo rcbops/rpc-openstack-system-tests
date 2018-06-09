@@ -18,3 +18,7 @@
 	path = molecules/molecule-rpc-openstack-post-deploy
 	url = https://github.com/rcbops/molecule-rpc-openstack-post-deploy
 	branch = pike-rc
+[submodule "molecules/molecule-openstack-ops"]
+	path = molecules/molecule-openstack-ops
+	url = https://github.com/rcbops/molecule-openstack-ops
+	branch = pike-rc
