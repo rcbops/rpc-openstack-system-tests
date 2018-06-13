@@ -56,7 +56,14 @@ echo "+-------------------- ANSIBLE INVENTORY --------------------+"
 # Run molecule converge and verify
 # for each submodule in ${SYS_TEST_SOURCE}/molecules
 set +e # allow test stages to return errors
-for TEST in molecules/* ; do
+DO_LAST="molecules/molecule-openstack-ops"
+TEST_ARRAY=( $(echo molecules/*) )
+if [[ " ${TEST_ARRAY[@]} " =~ " ${DO_LAST} " ]]; then
+    echo "Moving $DO_LAST to the final molecule to be run"
+    TEST_ARRAY=( "${TEST_ARRAY[@]/$DO_LAST}" )
+    TEST_ARRAY+=( "$DO_LAST" )
+fi
+for TEST in ${TEST_ARRAY[*]} ; do
     moleculerize --output "$TEST/molecule/default/molecule.yml" dynamic_inventory.json
     pushd "$TEST"
     repo_uri=$(git remote -v | awk '/fetch/{print $2}')
