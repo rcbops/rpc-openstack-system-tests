@@ -3,3 +3,4 @@ molecule
 mock
 pytest-rpc
 moleculerize
+pytest-ordering
