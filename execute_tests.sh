@@ -67,7 +67,7 @@ for TEST in molecules/* ; do
     # Capture the molecule test repo in the environment so "pytest-rpc" can record it.
     export MOLECULE_TEST_REPO=$(echo $repo_uri | rev | cut -d'/' -f1 - | rev | cut -d. -f1)
     molecule --debug converge
-    molecule verify
+    molecule --debug verify
     [[ $? -ne 0 ]] && RC=$?  # record non-zero exit code
     popd
 done
@@ -75,6 +75,8 @@ done
 # Gather junit.xml results
 rm -f test_results.tar  # ensure any previous results are deleted
 ls  molecules/*/molecule/*/*.xml | tar -cvf test_results.tar --files-from=-
+# Gather pytest debug files
+ls  molecules/*/molecule/*/pytestdebug.log | tar -rvf test_results.tar --files-from=-
 
 # if exit code is recorded, use it, otherwise let it exit naturally
 [[ -z ${RC+x} ]] && exit ${RC}
