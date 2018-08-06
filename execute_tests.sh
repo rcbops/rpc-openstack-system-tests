@@ -63,6 +63,8 @@ for TEST in molecules/* ; do
     echo "TESTING: $repo_uri at SHA $(git rev-parse HEAD)"
     # Capture the molecule test repo in the environment so "pytest-rpc" can record it.
     export MOLECULE_TEST_REPO=$(echo $repo_uri | rev | cut -d'/' -f1 - | rev | cut -d. -f1)
+    # Capture the SHA of the tests we are executing
+    export MOLECULE_GIT_COMMIT=$(git rev-parse HEAD)
     molecule --debug converge
     molecule --debug verify
     [[ $? -ne 0 ]] && RC=$?  # record non-zero exit code
