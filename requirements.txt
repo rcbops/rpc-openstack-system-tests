@@ -2,5 +2,6 @@
 molecule
 mock
 pytest-rpc
+pytest-zigzag
 moleculerize
 pytest-ordering
