@@ -69,6 +69,10 @@ for TEST in molecules/* ; do
     # Capture the SHA of the tests we are executing
     export MOLECULE_GIT_COMMIT=$(git rev-parse HEAD)
     molecule --debug converge
+    if [[ $? -ne 0 ]] && RC=$?; then  # do not run tests if converge fails
+        echo "CONVERGE: Failure in $(basename $TEST), verify step being skipped"
+        continue
+    fi
     molecule --debug verify
     [[ $? -ne 0 ]] && RC=$?  # record non-zero exit code
     popd
