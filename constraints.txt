@@ -1,5 +1,6 @@
 molecule~=2.14
 ansible==2.4.3
-pytest-rpc<1.0.0
+pytest-rpc==0.13.0
+pytest-zigzag==0.1.0
 moleculerize~=1.0
 pytest-ordering==0.5
