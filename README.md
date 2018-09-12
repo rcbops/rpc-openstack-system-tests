@@ -136,3 +136,20 @@ for TEST in $(ls molecules) ; do
     popd
 done
 ```
+
+Lint submodules for test_id conflicts
+-------------------------------------
+The simplest way to ensure that we dont introduce duplicate `test_id` mark values
+is to lint the repository with `flake8`.  For convenience this has been configured to 
+run with the `tox` tool.  Below is an example of running `tox` and encountering a
+duplicated `test_id`. 
+```
+(rpc-openstack-system-tests) MVW10EG8WL:rpc-openstack-system-tests zach2872$ tox
+flake8 installed: configparser==3.5.0,enum34==1.1.6,flake8==3.5.0,flake8-pytest-mark==0.5.0,mccabe==0.6.1,pycodestyle==2.3.1,pyflakes==1.6.0
+flake8 runtests: PYTHONHASHSEED='1589229466'
+flake8 runtests: commands[0] | flake8 --isolated --jobs=1 --select=M --pytest-mark1=name=test_id,enforce_unique_value=true,value_match=uuid
+./molecules/molecule-validate-glance-deploy/molecule/default/tests/test_scan_images_and_flavors.py:36:1: M301 @pytest.mark.test_id value is not unique! The '3d77bc35-7a21-11e8-90d1-6a00035510c0' mark value already specified for the 'test_volume_attached' test at line '64' found in the './molecules/molecule-rpc-openstack-post-deploy/molecule/default/tests/test_write_to_attached_storage.py' file!
+ERROR: InvocationError for command '/Users/zach2872/repos/rpc-openstack-system-tests/.tox/flake8/bin/flake8 --isolated --jobs=1 --select=M --pytest-mark1=name=test_id,enforce_unique_value=true,value_match=uuid' (exited with code 1)
+_________________________________________________________________________________________________ summary __________________________________________________________________________________________________
+ERROR:   flake8: commands failed
+```
