@@ -30,7 +30,7 @@ PIP_TARGET="$(awk -F= '/^pip==/ {print $3}' ${SYS_CONSTRAINTS})"
 VENV_PYTHON="${SYS_VENV_NAME}/bin/python"
 VENV_PIP="${SYS_VENV_NAME}/bin/pip"
 
-if [[ "$(${VENV_PIP} --version)" != "pip ${PIP_TARGET}"* ]]; then
+if [[ "$(${VENV_PIP} --version 2>/dev/null)" != "pip ${PIP_TARGET}"* ]]; then
     CURL_CMD="curl --silent --show-error --retry 5"
     OUTPUT_FILE="get-pip.py"
     ${CURL_CMD} https://bootstrap.pypa.io/get-pip.py > ${OUTPUT_FILE}  \
