@@ -13,10 +13,7 @@ export ANSIBLE_HOST_KEY_CHECKING=False
 SYS_VENV_NAME="${SYS_VENV_NAME:-venv-molecule}"
 SYS_CONSTRAINTS="constraints.txt"
 SYS_REQUIREMENTS="requirements.txt"
-SYS_INVENTORY="${SYS_INVENTORY:-/opt/openstack-ansible/playbooks/inventory}"
-${MNAIO_SSH} test -f "${SYS_INVENTORY}/dynamic_inventory.py" || \
-    SYS_INVENTORY="/opt/openstack-ansible/inventory" && ${MNAIO_SSH} test -f "${SYS_INVENTORY}/dynamic_inventory.py" || \
-    SYS_INVENTORY="/unknown_inventory_path"
+SYS_INVENTORY="${SYS_INVENTORY:-/etc/openstack_deploy/openstack_inventory.json}"
 
 ## Main ----------------------------------------------------------------------
 
@@ -49,7 +46,13 @@ ${VENV_PIP} install ${PIP_OPTIONS} || ${VENV_PIP} install --isolated ${PIP_OPTIO
 
 # Generate moleculerized inventory from openstack-ansible dynamic inventory
 echo "+-------------------- ANSIBLE INVENTORY --------------------+"
-${MNAIO_SSH} "${SYS_INVENTORY}/dynamic_inventory.py" > dynamic_inventory.json
+if [[ -e ${SYS_INVENTORY} ]]; then
+  echo "Local inventory source found."
+  cp ${SYS_INVENTORY} dynamic_inventory.json
+else
+  echo "No local inventory source found, copying from MNAIO infra1 node instead."
+  rsync infra1:${SYS_INVENTORY} dynamic_inventory.json
+fi
 cat dynamic_inventory.json
 echo "+-------------------- ANSIBLE INVENTORY --------------------+"
 
