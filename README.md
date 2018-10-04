@@ -114,9 +114,9 @@ moleculerize /path/to/dynamic_inventory.json
 The above command assumes that `moleculerize`'s built-in `molecule.yml.j2` template will be used along with 
 `molecule.yml` as the output file.
 
-Execute Molecule Tests
-----------------------
-For each of the submodules in the `molecules` directory, run the `molecule converge`
+Execute Molecule Tests Manually
+-------------------------------
+The bash scrip `execute_tests.sh` directory, run the `molecule converge`
 command to execute any ansible playbook plays needed to set the system up for
 test validation. Then run the `molecule verify` command to validate that the
 system state conforms to the defined specifications.
@@ -135,6 +135,25 @@ for TEST in $(ls molecules) ; do
     molecule verify
     popd
 done
+```
+
+Execute Molecule Tests via Script
+---------------------------------
+The bash script `execute_tests.sh` has been provided to assist in executing the Molecule test suites
+included as git submodules. (Assumes that git submodules have been initialized and recursively updated)
+
+By default the `execute_tests.sh` script assumes that execution was triggered within a CI environment.
+In order to execute Molecule tests in a developer MNAIO test environment on Phobos the `-p` CLI option
+must be specified.
+
+Example:
+```
+$ ./execute_tests.sh -p
+```
+
+Also, it is possible to execute a single Molecule test suite by supplying a Molecule path to the `-m` flag:
+```
+$ ./execute_tests.sh -p -m molecules/molecule-rpc-openstack-post-deploy
 ```
 
 Lint submodules for test_id conflicts
