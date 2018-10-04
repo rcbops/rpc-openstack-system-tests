@@ -14,8 +14,54 @@ SYS_VENV_NAME="${SYS_VENV_NAME:-venv-molecule}"
 SYS_CONSTRAINTS="constraints.txt"
 SYS_REQUIREMENTS="requirements.txt"
 SYS_INVENTORY="${SYS_INVENTORY:-/etc/openstack_deploy/openstack_inventory.json}"
+MOLECULES=()
+
+## Functions -----------------------------------------------------------------
+
+usage() {
+  echo -n "execute_tests [-l] [-m MOLECULE_PATH(S)]
+Execute Molecule tests.
+
+ Options:
+  -p    Set 'MNAIO_SSH' env var for testing MNAIO topology in Phobos
+  -m    Path of single Molecule to execute
+  -h    Display this help and exit
+"
+}
+
+## Parse Args ----------------------------------------------------------------
+
+while getopts ":lm:h" opt;
+do
+  case $opt in
+    p)
+      export MNAIO_SSH="ssh -ttt -oStrictHostKeyChecking=no root@infra1"
+      ;;
+    m)
+      MOLECULES+=$OPTARG
+      ;;
+    h)
+      usage
+      exit 1
+      ;;
+    \?)
+      usage
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
 
 ## Main ----------------------------------------------------------------------
+
+# Determine if the user specified a specific Molecule to execute or not
+if [ -z "$MOLECULES" ]
+then
+    MOLECULES=(molecules/*)
+fi
 
 # fail hard during setup
 set -e
@@ -57,9 +103,8 @@ cat dynamic_inventory.json
 echo "+-------------------- ANSIBLE INVENTORY --------------------+"
 
 # Run molecule converge and verify
-# for each submodule in ${SYS_TEST_SOURCE}/molecules
 set +e # allow test stages to return errors
-for TEST in molecules/* ; do
+for TEST in "${MOLECULES[@]}" ; do
     moleculerize --output "$TEST/molecule/default/molecule.yml" dynamic_inventory.json
     pushd "$TEST"
     repo_uri=$(git remote -v | awk '/fetch/{print $2}')
