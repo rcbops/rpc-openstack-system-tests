@@ -23,7 +23,7 @@ usage() {
 Execute Molecule tests.
 
  Options:
-  -l    Enable local testing (Not in CI)
+  -p    Set 'MNAIO_SSH' env var for testing MNAIO topology in Phobos
   -m    Path of single Molecule to execute
   -h    Display this help and exit
 "
@@ -34,7 +34,7 @@ Execute Molecule tests.
 while getopts ":lm:h" opt;
 do
   case $opt in
-    l)
+    p)
       export MNAIO_SSH="ssh -ttt -oStrictHostKeyChecking=no root@infra1"
       ;;
     m)
