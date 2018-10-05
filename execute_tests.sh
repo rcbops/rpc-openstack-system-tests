@@ -19,7 +19,7 @@ MOLECULES=()
 ## Functions -----------------------------------------------------------------
 
 usage() {
-  echo -n "execute_tests [-l] [-m MOLECULE_PATH(S)]
+  echo -n "execute_tests [-p] [-m MOLECULE_PATH(S)]
 Execute Molecule tests.
 
  Options:
