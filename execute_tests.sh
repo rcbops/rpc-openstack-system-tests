@@ -31,7 +31,7 @@ Execute Molecule tests.
 
 ## Parse Args ----------------------------------------------------------------
 
-while getopts ":lm:h" opt;
+while getopts ":pm:h" opt;
 do
   case $opt in
     p)
