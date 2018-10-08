@@ -8,3 +8,4 @@ pytest-ordering
 flake8
 flake8-pytest-mark
 tox
+jmespath
