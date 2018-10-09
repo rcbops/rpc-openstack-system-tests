@@ -1,11 +1,10 @@
 -c constraints.txt
-molecule
+flake8-pytest-mark
+jmespath
 mock
-pytest-rpc
-pytest-zigzag
+molecule
 moleculerize
 pytest-ordering
-flake8
-flake8-pytest-mark
+pytest-rpc
+pytest-zigzag
 tox
-jmespath
