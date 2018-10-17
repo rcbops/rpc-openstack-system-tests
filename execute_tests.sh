@@ -16,6 +16,10 @@ SYS_REQUIREMENTS="requirements.txt"
 SYS_INVENTORY="${SYS_INVENTORY:-/etc/openstack_deploy/openstack_inventory.json}"
 MOLECULES=()
 
+## Remove Ansible Plug-ins Prior to System Tests Execution
+
+rm -rf /root/.ansible/plugins
+
 ## Functions -----------------------------------------------------------------
 
 usage() {
