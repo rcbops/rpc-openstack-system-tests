@@ -1,6 +1,7 @@
-molecule~=2.14
 ansible==2.4.3
-pytest-rpc==0.13.0
-pytest-zigzag==0.1.1
+flake8-pytest-mark==1.0.0rc2
+molecule~=2.14
 moleculerize~=1.0
 pytest-ordering==0.5
+pytest-rpc==0.13.0
+pytest-zigzag==0.1.3
