@@ -1,5 +1,5 @@
 ansible==2.4.3
-flake8-pytest-mark==1.0.0rc2
+flake8-pytest-mark>=1.0.0,<2.0.0
 molecule~=2.14
 moleculerize~=1.0
 pytest-ordering==0.5
