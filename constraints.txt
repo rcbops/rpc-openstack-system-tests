@@ -1,4 +1,4 @@
-ansible==2.4.3
+ansible~=2.5.10
 flake8-pytest-mark~=1.0
 molecule~=2.14
 moleculerize~=1.0
