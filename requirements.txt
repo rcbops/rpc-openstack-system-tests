@@ -4,8 +4,8 @@ jmespath
 mock
 molecule
 moleculerize
-openstacksdk
 pytest-ordering
 pytest-rpc
 pytest-zigzag
+shade
 tox
