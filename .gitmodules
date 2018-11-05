@@ -1,4 +1,4 @@
 [submodule "molecules/molecule-rpc-openstack-post-deploy"]
 	path = molecules/molecule-rpc-openstack-post-deploy
 	url = https://github.com/rcbops/molecule-rpc-openstack-post-deploy
-	branch = dev
+	branch = osp13
