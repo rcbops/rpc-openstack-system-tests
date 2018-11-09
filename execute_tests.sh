@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Deploy virualenv for testing enironment molecule/ansible-playbook/infratest
+## Deploy virtualenv for testing environment molecule/ansible-playbook/infratest
 
 ## Shell Opts ----------------------------------------------------------------
 
@@ -37,7 +37,7 @@ Execute Molecule tests.
 
 while getopts ":pm:h" opt;
 do
-  case $opt in
+  case ${opt} in
     p)
       export MNAIO_SSH="ssh -ttt -oStrictHostKeyChecking=no root@infra1"
       ;;
@@ -114,12 +114,12 @@ for TEST in "${MOLECULES[@]}" ; do
     repo_uri=$(git remote -v | awk '/fetch/{print $2}')
     echo "TESTING: $repo_uri at SHA $(git rev-parse HEAD)"
     # Capture the molecule test repo in the environment so "pytest-rpc" can record it.
-    export MOLECULE_TEST_REPO=$(echo $repo_uri | rev | cut -d'/' -f1 - | rev | cut -d. -f1)
+    export MOLECULE_TEST_REPO=$(echo ${repo_uri} | rev | cut -d'/' -f1 - | rev | cut -d. -f1)
     # Capture the SHA of the tests we are executing
     export MOLECULE_GIT_COMMIT=$(git rev-parse HEAD)
     molecule --debug converge
     if [[ $? -ne 0 ]] && RC=$?; then  # do not run tests if converge fails
-        echo "CONVERGE: Failure in $(basename $TEST), verify step being skipped"
+        echo "CONVERGE: Failure in $(basename ${TEST}), verify step being skipped"
         continue
     fi
     molecule --debug verify
