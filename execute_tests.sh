@@ -13,7 +13,7 @@ export ANSIBLE_HOST_KEY_CHECKING=False
 SYS_VENV_NAME="${SYS_VENV_NAME:-venv-molecule}"
 SYS_CONSTRAINTS="constraints.txt"
 SYS_REQUIREMENTS="requirements.txt"
-SYS_INVENTORY="${SYS_INVENTORY:-/etc/openstack_deploy/openstack_inventory.json}"
+SYS_INVENTORY="/opt/osp-mnaio/playbooks/inventory/hosts"
 MOLECULES=()
 
 ## Remove Ansible Plug-ins Prior to System Tests Execution
@@ -94,15 +94,31 @@ fi
 PIP_OPTIONS="-r ${SYS_REQUIREMENTS}"
 ${VENV_PIP} install ${PIP_OPTIONS} || ${VENV_PIP} install --isolated ${PIP_OPTIONS}
 
-# Generate moleculerized inventory from openstack-ansible dynamic inventory
-echo "+-------------------- ANSIBLE INVENTORY --------------------+"
-if [[ -e ${SYS_INVENTORY} ]]; then
-  echo "Local inventory source found."
-  cp ${SYS_INVENTORY} dynamic_inventory.json
-else
-  echo "No local inventory source found, copying from MNAIO infra1 node instead."
-  rsync infra1:${SYS_INVENTORY} dynamic_inventory.json
+# OSP - The 'dynamic_inventory.json' file does not exist. So, we synthesize it
+# from the INI inventory in order to make it available to moleculerize.
+INI_INVENTORY_DIR=/tmp/tools/ini_inventory
+INI_INVENTORY=/tmp/hosts
+if [ ! -d "$INI_INVENTORY_DIR" ]; then
+    git clone https://github.com/jtyr/ansible-ini_inventory ${INI_INVENTORY_DIR}
 fi
+cp ${SYS_INVENTORY} ${INI_INVENTORY}
+cat >> ${INI_INVENTORY} <<EOD
+
+[network_hosts]
+director
+
+[utility]
+director
+
+[utility_all]
+director
+EOD
+
+python ${INI_INVENTORY_DIR}/ini_inventory.py \
+  --filename ${INI_INVENTORY} \
+  --list > dynamic_inventory.json
+
+echo "+-------------------- ANSIBLE INVENTORY --------------------+"
 cat dynamic_inventory.json
 echo "+-------------------- ANSIBLE INVENTORY --------------------+"
 
