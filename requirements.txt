@@ -1,6 +1,5 @@
 -c constraints.txt
 flake8-pytest-mark
-jmespath
 mock
 molecule
 moleculerize
