@@ -112,6 +112,9 @@ director
 
 [utility_all]
 director
+
+[shared-infra_hosts]
+director
 EOD
 
 python ${INI_INVENTORY_DIR}/ini_inventory.py \
