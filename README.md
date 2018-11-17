@@ -1,9 +1,6 @@
 System Tests for Rackspace Private Cloud - OpenStack
 ====================================================
 
-*WIP* This project is a work in progress and is subject to breaking changes
-and design changes.
-
 The rcp-openstack-system-tests repository contains virtualenv requirements and
 constraints for installing the
 [molecule framework](https://molecule.readthedocs.io/en/latest/)
@@ -53,8 +50,37 @@ command can be used to achieve this.
 git config -f .gitmodules submodule.<path>.branch <branch>
 ```
 
+Execute Molecule Tests via Script
+---------------------------------
+The bash script `execute_tests.sh` has been provided to assist in executing the Molecule test suites
+included as git submodules. (Assumes that git submodules have been initialized and recursively updated)
+
+By default the `execute_tests.sh` script assumes that execution was triggered within a CI environment.
+In order to execute Molecule tests in a developer MNAIO test environment on Phobos the `-p` CLI option
+must be specified.
+
+Example:
+```
+$ ./execute_tests.sh -p
+```
+
+Also, it is possible to execute a single Molecule test suite by supplying a Molecule path to the `-m` flag:
+```
+$ ./execute_tests.sh -p -m molecules/molecule-rpc-openstack-post-deploy
+```
+
 Virtualenv Deployment
 ---------------------
+
+The creation of the python virtualenv is handled as part of the
+`execute_tests.sh` script. It is usually more convenient to execute this
+script with a bogus module path or to abort the script after the virtualenv is
+deployed.
+
+TODO: [ASC-1185](https://rpc-openstack.atlassian.net/browse/ASC-1185) Create an
+option in `execute_scripts.sh` to terminate without executing molecule tests.
+
+If you wish to deploy the virtualenv manually, here are the steps to do so.
 
 On the Deployment Host, create a python virtualenv and populate it using the included
 `requirements.txt` and `constraints.txt` files. This will install `molecule` and
@@ -95,6 +121,16 @@ ${VENV_PIP} install ${PIP_OPTIONS} || ${VENV_PIP} install --isolated ${PIP_OPTIO
 Generate Molecule Config from Ansible Dynamic Inventory
 -------------------------------------------------------
 
+The creation of the molecule config is handled as part of the
+`execute_tests.sh` script. It is usually more convenient to execute this
+script and allow it to create the create the molecule config file for each
+molecule in scope.
+
+TODO: [ASC-1185](https://rpc-openstack.atlassian.net/browse/ASC-1185) Create an
+option in `execute_scripts.sh` to terminate without executing molecule tests.
+
+If you wish to generate a molecule config  manually, here are the steps to do so.
+
 The `moleculerize` tool will build molecule config files from a RPC-O Ansible dynamic inventory file. As a
 prerequisite to using the `moleculerize` tool, a dynamic inventory must be generated from a RPC-O build:
 
@@ -111,57 +147,16 @@ cd /path/to/rpc-openstack-system-tests
 moleculerize /path/to/dynamic_inventory.json
 ```
 
-The above command assumes that `moleculerize`'s built-in `molecule.yml.j2` template will be used along with 
+The above command assumes that `moleculerize`'s built-in `molecule.yml.j2` template will be used along with
 `molecule.yml` as the output file.
 
-Execute Molecule Tests Manually
--------------------------------
-The bash scrip `execute_tests.sh` directory, run the `molecule converge`
-command to execute any ansible playbook plays needed to set the system up for
-test validation. Then run the `molecule verify` command to validate that the
-system state conforms to the defined specifications.
-
-The `molecularize` tool is used to transpose the Deploy Host's dynamic
-inventory JSON output into the yaml format used by molecule internally.
-
-Example:
-```
-# Assuming that the dynamic inventory script is located at the following location:
-/opt/openstack-ansible/playbooks/inventory/dynamic_inventory.py > /tmp/dynamic_inventory.json
-for TEST in $(ls molecules) ; do
-    moleculerize --output molecules/$TEST/molecule/default/molecule.yml /tmp/dynamic_inventory.json
-    pushd molecules/$TEST
-    molecule converge
-    molecule verify
-    popd
-done
-```
-
-Execute Molecule Tests via Script
----------------------------------
-The bash script `execute_tests.sh` has been provided to assist in executing the Molecule test suites
-included as git submodules. (Assumes that git submodules have been initialized and recursively updated)
-
-By default the `execute_tests.sh` script assumes that execution was triggered within a CI environment.
-In order to execute Molecule tests in a developer MNAIO test environment on Phobos the `-p` CLI option
-must be specified.
-
-Example:
-```
-$ ./execute_tests.sh -p
-```
-
-Also, it is possible to execute a single Molecule test suite by supplying a Molecule path to the `-m` flag:
-```
-$ ./execute_tests.sh -p -m molecules/molecule-rpc-openstack-post-deploy
-```
 
 Lint submodules for test_id conflicts
 -------------------------------------
-The simplest way to ensure that we dont introduce duplicate `test_id` mark values
-is to lint the repository with `flake8`.  For convenience this has been configured to 
+The simplest way to ensure that we don't introduce duplicate `test_id` mark values
+is to lint the repository with `flake8`.  For convenience this has been configured to
 run with the `tox` tool.  Below is an example of running `tox` and encountering a
-duplicated `test_id`. 
+duplicated `test_id`.
 ```
 (rpc-openstack-system-tests) MVW10EG8WL:rpc-openstack-system-tests zach2872$ tox
 flake8 installed: configparser==3.5.0,enum34==1.1.6,flake8==3.5.0,flake8-pytest-mark==0.5.0,mccabe==0.6.1,pycodestyle==2.3.1,pyflakes==1.6.0
