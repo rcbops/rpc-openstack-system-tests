@@ -69,14 +69,14 @@ Execute a single Molecule test suite by supplying a Molecule path to the `-m` fl
 $ ./execute_tests.sh -p -m molecules/molecule-rpc-openstack-post-deploy
 ```
 
-Skip execution of the Molecule converge stage by supplying the `-c` flag:
+Skip execution of the Molecule converge stage by supplying the `--sc` flag:
 ```
-$ ./execute_tests.sh -p -c
+$ ./execute_tests.sh -p --sc
 ```
 
-Skip execution of the Molecule verify stage by supplying the `-v` flag:
+Skip execution of the Molecule verify stage by supplying the `--sv` flag:
 ```
-$ ./execute_tests.sh -p -v
+$ ./execute_tests.sh -p --sv
 ```
 
 Virtualenv Deployment
@@ -89,10 +89,10 @@ ready-to-go development environment.
 
 Example:
 ```
-$ ./execute_tests.sh -c -v
+$ ./execute_tests.sh --sc --sv
 ```
 
-The `-c` `-v` flags skip the converge stage and verify stage, thus only
+The `--sc` `--sv` flags skip the converge stage and verify stage, thus only
 creating the Python virtual environment in the directory `venv-molecule`.
 
 Lint submodules for test_id conflicts
