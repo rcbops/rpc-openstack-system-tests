@@ -27,21 +27,21 @@ rm -rf /root/.ansible/plugins
 ## Functions -----------------------------------------------------------------
 
 usage() {
-  echo -n "execute_tests [-p] [-m MOLECULE_PATH(S)] [-c] [-v]
+  echo -n "execute_tests [-p] [-m MOLECULE_PATH(S)] [--sc|skip-converge] [--sv|skip-verify]
 Execute Molecule tests.
 
  Options:
-  -p    Set 'MNAIO_SSH' env var for testing MNAIO topology in Phobos
-  -m    Path of single Molecule to execute
-  -c    Skip the Molecule converge stage
-  -v    Skip the Molecule verify stage
-  -h    Display this help and exit
+  -p      Set 'MNAIO_SSH' env var for testing MNAIO topology in Phobos
+  -m      Path of single Molecule to execute
+  --sc    Skip the Molecule converge stage [--skip-converge]
+  --sv    Skip the Molecule verify stage [--skip-verify]
+  -h      Display this help and exit
 "
 }
 
 ## Parse Args ----------------------------------------------------------------
 
-while getopts ":pm:cvh" opt;
+while getopts ":pm:-:h" opt;
 do
   case ${opt} in
     p)
@@ -50,17 +50,33 @@ do
     m)
       MOLECULES+=$OPTARG
       ;;
-    c)
-      SKIP_CONVERGE=true
-      ;;
-    v)
-      SKIP_VERIFY=true
+    -)
+      case ${OPTARG} in
+        skip-converge)
+          SKIP_CONVERGE=true
+          ;;
+        sc)
+          SKIP_CONVERGE=true
+          ;;
+        skip-verify)
+          SKIP_VERIFY=true
+          ;;
+        sv)
+          SKIP_VERIFY=true
+          ;;
+        *)
+          echo error "Invalid option: --${OPTARG}" >&2
+          usage
+          exit 1
+          ;;
+      esac
       ;;
     h)
       usage
       exit 1
       ;;
     \?)
+      echo error "Invalid option: -$OPTARG" >&2
       usage
       exit 1
       ;;
