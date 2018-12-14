@@ -14,6 +14,10 @@ SYS_VENV_NAME="${SYS_VENV_NAME:-venv-molecule}"
 SYS_CONSTRAINTS="constraints.txt"
 SYS_REQUIREMENTS="requirements.txt"
 SYS_INVENTORY="${SYS_INVENTORY:-/etc/openstack_deploy/openstack_inventory.json}"
+
+SKIP_CONVERGE=false
+SKIP_VERIFY=false
+
 MOLECULES=()
 
 ## Remove Ansible Plug-ins Prior to System Tests Execution
@@ -23,19 +27,21 @@ rm -rf /root/.ansible/plugins
 ## Functions -----------------------------------------------------------------
 
 usage() {
-  echo -n "execute_tests [-p] [-m MOLECULE_PATH(S)]
+  echo -n "execute_tests [-p] [-m MOLECULE_PATH(S)] [--sc|skip-converge] [--sv|skip-verify]
 Execute Molecule tests.
 
  Options:
-  -p    Set 'MNAIO_SSH' env var for testing MNAIO topology in Phobos
-  -m    Path of single Molecule to execute
-  -h    Display this help and exit
+  -p      Set 'MNAIO_SSH' env var for testing MNAIO topology in Phobos
+  -m      Path of single Molecule to execute
+  --sc    Skip the Molecule converge stage [--skip-converge]
+  --sv    Skip the Molecule verify stage [--skip-verify]
+  -h      Display this help and exit
 "
 }
 
 ## Parse Args ----------------------------------------------------------------
 
-while getopts ":pm:h" opt;
+while getopts ":pm:-:h" opt;
 do
   case ${opt} in
     p)
@@ -44,11 +50,33 @@ do
     m)
       MOLECULES+=$OPTARG
       ;;
+    -)
+      case ${OPTARG} in
+        skip-converge)
+          SKIP_CONVERGE=true
+          ;;
+        sc)
+          SKIP_CONVERGE=true
+          ;;
+        skip-verify)
+          SKIP_VERIFY=true
+          ;;
+        sv)
+          SKIP_VERIFY=true
+          ;;
+        *)
+          echo error "Invalid option: --${OPTARG}" >&2
+          usage
+          exit 1
+          ;;
+      esac
+      ;;
     h)
       usage
       exit 1
       ;;
     \?)
+      echo error "Invalid option: -$OPTARG" >&2
       usage
       exit 1
       ;;
@@ -62,8 +90,7 @@ done
 ## Main ----------------------------------------------------------------------
 
 # Determine if the user specified a specific Molecule to execute or not
-if [ -z "$MOLECULES" ]
-then
+if [[ -z "${MOLECULES}" ]]; then
     MOLECULES=(molecules/*)
 fi
 
@@ -113,25 +140,44 @@ for TEST in "${MOLECULES[@]}" ; do
     pushd "$TEST"
     repo_uri=$(git remote -v | awk '/fetch/{print $2}')
     echo "TESTING: $repo_uri at SHA $(git rev-parse HEAD)"
+
     # Capture the molecule test repo in the environment so "pytest-rpc" can record it.
     export MOLECULE_TEST_REPO=$(echo ${repo_uri} | rev | cut -d'/' -f1 - | rev | cut -d. -f1)
+
     # Capture the SHA of the tests we are executing
     export MOLECULE_GIT_COMMIT=$(git rev-parse HEAD)
-    molecule --debug converge
+
+    # Execute the converge step
+    if [[ "${SKIP_CONVERGE}" = false ]]; then
+        molecule --debug converge
+    else
+        echo "Skipping converge step!"
+    fi
+
     if [[ $? -ne 0 ]] && RC=$?; then  # do not run tests if converge fails
         echo "CONVERGE: Failure in $(basename ${TEST}), verify step being skipped"
         continue
     fi
-    molecule --debug verify
+
+    # Execute the verify step
+    if [[ "${SKIP_VERIFY}" = false ]]; then
+        molecule --debug verify
+    else
+        echo "Skipping verify step!"
+    fi
+
     [[ $? -ne 0 ]] && RC=$?  # record non-zero exit code
     popd
 done
 
-# Gather junit.xml results
-rm -f test_results.tar  # ensure any previous results are deleted
-ls  molecules/*/molecule/*/*.xml | tar -cvf test_results.tar --files-from=-
-# Gather pytest debug files
-ls  molecules/*/molecule/*/pytestdebug.log | tar -rvf test_results.tar --files-from=-
+# Gather junit.xml results if verify stage was executed
+if [[ "${SKIP_VERIFY}" = false ]]; then
+    rm -f test_results.tar  # ensure any previous results are deleted
+    ls  molecules/*/molecule/*/*.xml | tar -cvf test_results.tar --files-from=-
+
+    # Gather pytest debug files
+    ls  molecules/*/molecule/*/pytestdebug.log | tar -rvf test_results.tar --files-from=-
+fi
 
 # if exit code is recorded, use it, otherwise let it exit naturally
 [[ -z ${RC+x} ]] && exit ${RC}
