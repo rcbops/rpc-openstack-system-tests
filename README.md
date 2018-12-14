@@ -18,9 +18,9 @@ Gather Submodules
 -----------------
 Since the molecule tests are included as git submodules, they must be
 initialized and updated in order to be accessible to the molecule test runner.
+Utilize the provided `make` target to initialize and update git submodules.
 ```
-git submodule init
-git submodule update --recursive --remote
+make gather-submodules
 ```
 
 Adding Submodules
@@ -64,92 +64,36 @@ Example:
 $ ./execute_tests.sh -p
 ```
 
-Also, it is possible to execute a single Molecule test suite by supplying a Molecule path to the `-m` flag:
+Execute a single Molecule test suite by supplying a Molecule path to the `-m` flag:
 ```
 $ ./execute_tests.sh -p -m molecules/molecule-rpc-openstack-post-deploy
+```
+
+Skip execution of the Molecule converge stage by supplying the `--sc` flag:
+```
+$ ./execute_tests.sh -p --sc
+```
+
+Skip execution of the Molecule verify stage by supplying the `--sv` flag:
+```
+$ ./execute_tests.sh -p --sv
 ```
 
 Virtualenv Deployment
 ---------------------
 
 The creation of the python virtualenv is handled as part of the
-`execute_tests.sh` script. It is usually more convenient to execute this
-script with a bogus module path or to abort the script after the virtualenv is
-deployed.
+`execute_tests.sh` script. However, it can be quite convenient to create a
+Python virtual environment with Molecule prerequisites installed for a
+ready-to-go development environment.
 
-TODO: [ASC-1185](https://rpc-openstack.atlassian.net/browse/ASC-1185) Create an
-option in `execute_scripts.sh` to terminate without executing molecule tests.
-
-If you wish to deploy the virtualenv manually, here are the steps to do so.
-
-On the Deployment Host, create a python virtualenv and populate it using the included
-`requirements.txt` and `constraints.txt` files. This will install `molecule` and
-`ansible` into the virtualenv.
-
-Example
+Example:
 ```
-SYS_VENV_NAME=venv-molecule
-SYS_CONSTRAINTS="constraints.txt"
-SYS_REQUIREMENTS="requirements.txt"
-
-# Create virtualenv for molecule
-virtualenv --no-pip --no-setuptools --no-wheel ${SYS_VENV_NAME}
-
-# Activate virtualenv
-source ${SYS_VENV_NAME}/bin/activate
-
-# Ensure that correct pip version is installed
-PIP_TARGET="$(awk -F= '/^pip==/ {print $3}' ${SYS_CONSTRAINTS})"
-VENV_PYTHON="${SYS_VENV_NAME}/bin/python"
-VENV_PIP="${SYS_VENV_NAME}/bin/pip"
-
-if [[ "$(${VENV_PIP} --version)" != "pip ${PIP_TARGET}"* ]]; then
-    CURL_CMD="curl --silent --show-error --retry 5"
-    OUTPUT_FILE="get-pip.py"
-    ${CURL_CMD} https://bootstrap.pypa.io/get-pip.py > ${OUTPUT_FILE}  \
-        || ${CURL_CMD} https://raw.githubusercontent.com/pypa/get-pip/master/get-pip.py > ${OUTPUT_FILE}
-    GETPIP_OPTIONS="pip setuptools wheel --constraint ${SYS_CONSTRAINTS}"
-    ${VENV_PYTHON} ${OUTPUT_FILE} ${GETPIP_OPTIONS} \
-        || ${VENV_PYTHON} ${OUTPUT_FILE} --isolated ${GETPIP_OPTIONS}
-fi
-
-# Install test suite requirements
-PIP_OPTIONS=-r ${SYS_REQUIREMENTS}"
-${VENV_PIP} install ${PIP_OPTIONS} || ${VENV_PIP} install --isolated ${PIP_OPTIONS}
+$ ./execute_tests.sh --sc --sv
 ```
 
-Generate Molecule Config from Ansible Dynamic Inventory
--------------------------------------------------------
-
-The creation of the molecule config is handled as part of the
-`execute_tests.sh` script. It is usually more convenient to execute this
-script and allow it to create the create the molecule config file for each
-molecule in scope.
-
-TODO: [ASC-1185](https://rpc-openstack.atlassian.net/browse/ASC-1185) Create an
-option in `execute_scripts.sh` to terminate without executing molecule tests.
-
-If you wish to generate a molecule config  manually, here are the steps to do so.
-
-The `moleculerize` tool will build molecule config files from a RPC-O Ansible dynamic inventory file. As a
-prerequisite to using the `moleculerize` tool, a dynamic inventory must be generated from a RPC-O build:
-
-```
-sudo su -
-cd /opt/openstack-ansible/playbooks/inventory
-./dynamic_inventory.py > /path/to/dynamic_inventory.json
-```
-
-Now you can generate a `molecule.yml` config file using the `moleculerize` tool:
-
-```
-cd /path/to/rpc-openstack-system-tests
-moleculerize /path/to/dynamic_inventory.json
-```
-
-The above command assumes that `moleculerize`'s built-in `molecule.yml.j2` template will be used along with
-`molecule.yml` as the output file.
-
+The `--sc` `--sv` flags skip the converge stage and verify stage, thus only
+creating the Python virtual environment in the directory `venv-molecule`.
 
 Lint submodules for test_id conflicts
 -------------------------------------
