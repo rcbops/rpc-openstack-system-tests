@@ -33,6 +33,7 @@ Execute Molecule tests.
  Options:
   -p      Set 'MNAIO_SSH' env var for testing MNAIO topology in Phobos
   -m      Path of single Molecule to execute
+  -s      Scenario to execute
   --sc    Skip the Molecule converge stage [--skip-converge]
   --sv    Skip the Molecule verify stage [--skip-verify]
   -h      Display this help and exit
@@ -41,7 +42,7 @@ Execute Molecule tests.
 
 ## Parse Args ----------------------------------------------------------------
 
-while getopts ":pm:-:h" opt;
+while getopts ":pms:-:h" opt;
 do
   case ${opt} in
     p)
@@ -49,6 +50,9 @@ do
       ;;
     m)
       MOLECULES+=$OPTARG
+      ;;
+    s)
+      SCENARIOS+=$OPTARG
       ;;
     -)
       case ${OPTARG} in
@@ -92,6 +96,11 @@ done
 # Determine if the user specified a specific Molecule to execute or not
 if [[ -z "${MOLECULES}" ]]; then
     MOLECULES=(molecules/*)
+fi
+
+# Determine if the user specified a specific scenario to execute or not
+if [[ -z "${SCENARIOS}" ]]; then
+    SCENARIOS=(default)
 fi
 
 # fail hard during setup
@@ -155,38 +164,40 @@ echo "+-------------------- ANSIBLE INVENTORY --------------------+"
 # Run molecule converge and verify
 set +e # allow test stages to return errors
 for TEST in "${MOLECULES[@]}" ; do
-    moleculerize --output "$TEST/molecule/default/molecule.yml" dynamic_inventory.json
-    pushd "$TEST"
-    repo_uri=$(git remote -v | awk '/fetch/{print $2}')
-    echo "TESTING: $repo_uri at SHA $(git rev-parse HEAD)"
+    for SCENARIO in "${SCENARIOS[@]}" ; do
+        moleculerize --scenario "${SCENARIO}" --output "$TEST/molecule/$SCENARIO/molecule.yml" dynamic_inventory.json
+        pushd "$TEST"
+        repo_uri=$(git remote -v | awk '/fetch/{print $2}')
+        echo "TESTING: $repo_uri at SHA $(git rev-parse HEAD)"
 
-    # Capture the molecule test repo in the environment so "pytest-rpc" can record it.
-    export MOLECULE_TEST_REPO=$(echo ${repo_uri} | rev | cut -d'/' -f1 - | rev | cut -d. -f1)
+        # Capture the molecule test repo in the environment so "pytest-rpc" can record it.
+        export MOLECULE_TEST_REPO=$(echo ${repo_uri} | rev | cut -d'/' -f1 - | rev | cut -d. -f1)
 
-    # Capture the SHA of the tests we are executing
-    export MOLECULE_GIT_COMMIT=$(git rev-parse HEAD)
+        # Capture the SHA of the tests we are executing
+        export MOLECULE_GIT_COMMIT=$(git rev-parse HEAD)
 
-    # Execute the converge step
-    if [[ "${SKIP_CONVERGE}" = false ]]; then
-        molecule --debug converge
-    else
-        echo "Skipping converge step!"
-    fi
+        # Execute the converge step
+        if [[ "${SKIP_CONVERGE}" = false ]]; then
+            molecule --debug converge --scenario-name "${SCENARIO}"
+        else
+            echo "Skipping converge step!"
+        fi
 
-    if [[ $? -ne 0 ]] && RC=$?; then  # do not run tests if converge fails
-        echo "CONVERGE: Failure in $(basename ${TEST}), verify step being skipped"
-        continue
-    fi
+        if [[ $? -ne 0 ]] && RC=$?; then  # do not run tests if converge fails
+            echo "CONVERGE: Failure in $(basename ${TEST}) for scenario ${SCENARIO}, verify step being skipped"
+            continue
+        fi
 
-    # Execute the verify step
-    if [[ "${SKIP_VERIFY}" = false ]]; then
-        molecule --debug verify
-    else
-        echo "Skipping verify step!"
-    fi
+        # Execute the verify step
+        if [[ "${SKIP_VERIFY}" = false ]]; then
+            molecule --debug verify --scenario-name "${SCENARIO}"
+        else
+            echo "Skipping verify step!"
+        fi
 
-    [[ $? -ne 0 ]] && RC=$?  # record non-zero exit code
-    popd
+        [[ $? -ne 0 ]] && RC=$?  # record non-zero exit code
+        popd
+    done
 done
 
 # Gather junit.xml results if verify stage was executed
