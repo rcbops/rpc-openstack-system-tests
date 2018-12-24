@@ -164,6 +164,19 @@ echo "+-------------------- ANSIBLE INVENTORY --------------------+"
 # Run molecule converge and verify
 set +e # allow test stages to return errors
 for TEST in "${MOLECULES[@]}" ; do
+    # Introspect all scenarios from given molecule
+    ALL_SCENARIOS=()
+    SCENARIO_PATHS=($TEST/molecule/*)
+    for path in "${SCENARIO_PATHS[@]}"; do
+        ALL_SCENARIOS+=("${path##*/}")
+    done
+    # The molecule.yml file for all scenarios needs to be valid for any of
+    # them to work.  So, we first generate them all before focusing on the
+    # ones specified by the user.
+    for SCENARIO in "${ALL_SCENARIOS[@]}" ; do
+        moleculerize --scenario "${SCENARIO}" --output "$TEST/molecule/$SCENARIO/molecule.yml" dynamic_inventory.json
+    done
+    # Resume normal operation.
     for SCENARIO in "${SCENARIOS[@]}" ; do
         moleculerize --scenario "${SCENARIO}" --output "$TEST/molecule/$SCENARIO/molecule.yml" dynamic_inventory.json
         pushd "$TEST"
