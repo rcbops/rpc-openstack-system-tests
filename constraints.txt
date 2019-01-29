@@ -4,5 +4,5 @@ molecule~=2.14
 moleculerize~=1.0
 pytest-ordering==0.5
 pytest==3.9.3
-pytest-rpc==1.0.0.dev0
+pytest-rpc~=1.0
 pytest-zigzag~=0.1
