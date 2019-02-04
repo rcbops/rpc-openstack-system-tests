@@ -19,6 +19,7 @@ SKIP_CONVERGE=false
 SKIP_VERIFY=false
 
 MOLECULES=()
+SCENARIOS=()
 
 ## Remove Ansible Plug-ins Prior to System Tests Execution
 
@@ -49,10 +50,10 @@ do
       export MNAIO_SSH="ssh -ttt -oStrictHostKeyChecking=no root@infra1"
       ;;
     m)
-      MOLECULES+=$OPTARG
+      MOLECULES+=("$OPTARG")
       ;;
     s)
-      SCENARIOS+=$OPTARG
+      SCENARIOS+=("$OPTARG")
       ;;
     -)
       case ${OPTARG} in
@@ -94,12 +95,12 @@ done
 ## Main ----------------------------------------------------------------------
 
 # Determine if the user specified a specific Molecule to execute or not
-if [[ -z "${MOLECULES}" ]]; then
+if [ "${#MOLECULES[@]}" -eq 0 ]; then
     MOLECULES=(molecules/*)
 fi
 
 # Determine if the user specified a specific scenario to execute or not
-if [[ -z "${SCENARIOS}" ]]; then
+if [ "${#SCENARIOS[@]}" -eq 0 ]; then
     SCENARIOS=(default)
 fi
 
