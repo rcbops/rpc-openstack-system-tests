@@ -2,3 +2,7 @@
 	path = molecules/molecule-rpc-openstack-post-deploy
 	url = https://github.com/rcbops/molecule-rpc-openstack-post-deploy
 	branch = dev
+[submodule "molecules/rpc-openstack-healthcheck"]
+	path = molecules/rpc-openstack-healthcheck
+	url = https://github.com/rcbops/rpc-openstack-healthcheck
+	branch = dev
