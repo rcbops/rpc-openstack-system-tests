@@ -43,7 +43,7 @@ Execute Molecule tests.
 
 ## Parse Args ----------------------------------------------------------------
 
-while getopts ":pms:-:h" opt;
+while getopts ":pm:s:-:h" opt;
 do
   case ${opt} in
     p)
@@ -98,11 +98,13 @@ done
 if [ "${#MOLECULES[@]}" -eq 0 ]; then
     MOLECULES=(molecules/*)
 fi
+echo "Preparing to test MOLECULES '${MOLECULES[*]}'"
 
 # Determine if the user specified a specific scenario to execute or not
 if [ "${#SCENARIOS[@]}" -eq 0 ]; then
     SCENARIOS=(default)
 fi
+echo "Preparing to test SCENARIOS '${SCENARIOS[*]}'"
 
 # fail hard during setup
 set -e
