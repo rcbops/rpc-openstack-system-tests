@@ -6,3 +6,7 @@
 	path = molecules/rpc-openstack-healthcheck
 	url = https://github.com/rcbops/rpc-openstack-healthcheck
 	branch = dev
+[submodule "molecules/molecule-rpco-fsit"]
+	path = molecules/molecule-rpco-fsit
+	url = https://github.com/rcbops/molecule-rpco-fsit
+	branch = dev
